@@ -5,10 +5,9 @@ Run the self-checking pipeline regression with Python 3, Icarus Verilog and
 python3 testbenches/test_nzcv_forward.py --source . --output /path/to/private/output
 ```
 
-`IVERILOG`, `IVERILOG_IVL`, `VVP` and `LLVM_MC` can select tool installations.
-The runner also recognizes the local Icarus prefix used by the development
-environment. The RTL is compiled as Verilog 2005 because it uses `type` as an
-identifier. No source compatibility edits are needed.
+By default, `iverilog`, `vvp` and `llvm-mc` are resolved from `PATH`.
+`IVERILOG`, `VVP`, `IVERILOG_IVL` and `LLVM_MC` provide explicit overrides.
+The RTL is compiled as Verilog 2005 because it uses `type` as an identifier.
 
 The 34 short A32 programs execute the complete `DeepPipeline` and its native
 caches. Only instruction memory is populated by the testbench; programs start

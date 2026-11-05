@@ -134,13 +134,12 @@ def main():
         return p
 
     try:
-        prefix = Path.home() / '.local/share/arm-hdl-tools/prefix/iverilog/usr'
-        iv = Path(os.environ.get('IVERILOG') or shutil.which('iverilog') or prefix / 'bin/iverilog')
-        vvp = Path(os.environ.get('VVP') or shutil.which('vvp') or iv.parent / 'vvp')
+        iv = os.environ.get('IVERILOG') or shutil.which('iverilog')
+        vvp = os.environ.get('VVP') or shutil.which('vvp')
+        if not iv or not vvp:
+            raise FileNotFoundError('iverilog and vvp must be on PATH or set with IVERILOG and VVP')
         ivcmd = [iv]
         ivl = os.environ.get('IVERILOG_IVL')
-        if not ivl and (iv.parent.parent / 'lib/x86_64-linux-gnu/ivl').is_dir():
-            ivl = str(iv.parent.parent / 'lib/x86_64-linux-gnu/ivl')
         if ivl:
             ivcmd += ['-B', ivl]
         mc = os.environ.get('LLVM_MC', 'llvm-mc')
