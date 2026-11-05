@@ -58,8 +58,8 @@ always @(*) begin
 		end
 		//result = op1-op2
 		`SUB: begin
-			neg = -operand_2;
-			{cin, result[N-2:0]} = operand_1[N-2:0]+neg[N-2:0]; 
+			neg = ~operand_2;
+			{cin, result[N-2:0]} = operand_1[N-2:0]+neg[N-2:0]+1'b1;
 			{cout, result[N-1]} = cin+ operand_1[N-1]+neg[N-1];
 			nzcv[1]  = cout;	//carry flag
 			nzcv[0] = cin^cout; //overflow flag
@@ -68,8 +68,8 @@ always @(*) begin
 		
 		//result = op2-op1
 		`RSB: begin
-			neg = -operand_1;
-			{cin, result[N-2:0]} = operand_2[N-2:0]+neg[N-2:0]; 
+			neg = ~operand_1;
+			{cin, result[N-2:0]} = operand_2[N-2:0]+neg[N-2:0]+1'b1;
 			{cout, result[N-1]} = cin+ operand_2[N-1]+neg[N-1];
 			nzcv[1]  = cout;	//carry flag
 			nzcv[0] = cin^cout; //overflow flag
@@ -96,8 +96,8 @@ always @(*) begin
 		
 		//result = op1 – Op2 + C-1
 		`SBC: begin
-			neg = -operand_2;
-			{cin, result[N-2:0]} = operand_1[N-2:0]+neg[N-2:0]+nzcv_old[1]-1; 
+			neg = ~operand_2;
+			{cin, result[N-2:0]} = operand_1[N-2:0]+neg[N-2:0]+nzcv_old[1];
 			{cout, result[N-1]} = cin+ operand_1[N-1]+neg[N-1];
 			nzcv[1]  = cout;	//carry flag
 			nzcv[0] = cin^cout; //overflow flag	
@@ -106,8 +106,8 @@ always @(*) begin
 		
 		//result = op2-op1+c-1
 		`RSC: begin
-			neg = -operand_1;
-			{cin, result[N-2:0]} = operand_2[N-2:0]+neg[N-2:0]+nzcv_old[1]-1; 
+			neg = ~operand_1;
+			{cin, result[N-2:0]} = operand_2[N-2:0]+neg[N-2:0]+nzcv_old[1];
 			{cout, result[N-1]} = cin+ operand_2[N-1]+neg[N-1];
 			nzcv[1]  = cout;	//carry flag
 			nzcv[0] = cin^cout; //overflow flag
@@ -130,8 +130,8 @@ always @(*) begin
 		
 		//same as SUB but you don't write back
 		`CMP: begin
-			neg = -operand_2;
-			{cin, result[N-2:0]} = operand_1[N-2:0]+neg[N-2:0]; 
+			neg = ~operand_2;
+			{cin, result[N-2:0]} = operand_1[N-2:0]+neg[N-2:0]+1'b1;
 			{cout, result[N-1]} = cin+ operand_1[N-1]+neg[N-1];
 			nzcv[1]  = cout;	//carry flag
 			nzcv[0] = cin^cout; //overflow flag
