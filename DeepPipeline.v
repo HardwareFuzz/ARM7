@@ -162,6 +162,7 @@ reg MUL_ALU_flush;
 
 wire[31:0] alu_result;
 wire[3:0] alu_nzcv;
+wire[3:0] alu_arch_nzcv;
 wire alu_is_writeback;
 wire will_this_be_executed;
 
@@ -176,7 +177,13 @@ wire[3:0] nzcv_effective;
 assign nzcv_effective = (MUL_ALU_will_this_be_executed && !MUL_ALU_flush &&
                         MUL_ALU_instr[20] &&
                         (MUL_ALU_type == `dataProcessing || MUL_ALU_type == `multiply))
-                       ? alu_nzcv : nzcv_forward;
+                       ? alu_arch_nzcv : nzcv_forward;
+
+// MUL(S)/MLA(S) derive N/Z from the result and preserve V.
+// Retaining C is also valid for the ARMv4 unpredictable carry result.
+assign alu_arch_nzcv = (MUL_ALU_type == `multiply)
+                     ? {alu_result[31], (alu_result == 32'b0), nzcv_forward[1:0]}
+                     : alu_nzcv;
 
 reg use_shifter;
 reg[31:0] alu_operand_1;
@@ -688,7 +695,7 @@ always@(*) begin
 				write_enable = 1;
 				write_enable_2 = 0;
 				cspr_update = {MEM_W_alu_nzcv,cspr_update[27:0]};
-				cspr_update = MEM_W_instr[20];	//set bit
+				cspr_write = MEM_W_instr[20];	//set bit
 				pc_update = current_pc + 4;
 				pc_write = 1;
 			end
@@ -787,7 +794,7 @@ always @(posedge clk) begin
 		ALU_MEM_out_data_4 	 = MUL_ALU_out_data_4;
 		ALU_MEM_mult_result  = MUL_ALU_mult_result;
 		ALU_MEM_alu_result 	 = alu_result;
-		ALU_MEM_alu_nzcv 	 = alu_nzcv;
+		ALU_MEM_alu_nzcv 	 = alu_arch_nzcv;
 		ALU_MEM_alu_is_writeback  = alu_is_writeback;
 		ALU_MEM_flush		 = MUL_ALU_flush;
 		nzcv_forward = nzcv_effective;	//forward only effective flags
